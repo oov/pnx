@@ -7,12 +7,14 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 
 	"bitbucket.org/oov/dgf"
 	"github.com/lestrrat-go/ngram"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/opt"
+	"golang.org/x/text/unicode/norm"
 
 	"github.com/oov/pnx/adapter"
 )
@@ -67,7 +69,7 @@ func createFTSDB(df *dgf.Dgf, db *sql.DB, n, start, end int) error {
 		if text == " \u4F55\u3082\u898B\u3064\u304B\u3089\u306A\u3044\u304A\uFF08 \uFF3E\u03C9\uFF3E\uFF09 " {
 			continue
 		}
-		tkz := ngram.NewTokenize(n, text)
+		tkz := ngram.NewTokenize(n, norm.NFKC.String(strings.TrimSpace(text)))
 		tokens := tkz.Tokens()
 		for {
 			tk := tokens[len(tokens)-1]
